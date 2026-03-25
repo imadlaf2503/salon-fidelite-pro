@@ -1,71 +1,41 @@
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ma Carte - {{salon_name}}</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        body { background: #1a1a1a; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        
-        .card { 
-            background: linear-gradient(135deg, #2c3e50 0%, #000 100%); 
-            width: 100%; max-width: 350px; border-radius: 20px; color: white; padding: 25px;
-            text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transition pour la carte */
-        }
-
-        .points-val { 
-            font-size: 5em; font-weight: 900; color: #f1c40f; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Effet rebond */
-            display: inline-block;
-        }
-
-        /* Classe d'animation (AJOUTÉE PAR JS) */
-        .bump { 
-            transform: scale(1.5); 
-            color: #fff;
-            text-shadow: 0 0 20px #f1c40f;
-        }
-
-        .card-highlight {
-            box-shadow: 0 0 40px #f1c40f;
-            transform: translateY(-10px);
-        }
-
-        .qr-container { background: white; padding: 10px; border-radius: 10px; margin-top: 20px; }
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; margin: 0; padding: 20px; }
+        .card { background: #2a2a2a; padding: 20px; border-radius: 20px; border: 2px solid #f39c12; max-width: 350px; margin: auto; }
+        .qr-container { background: white; padding: 10px; display: inline-block; border-radius: 10px; margin-top: 20px; }
+        h1 { color: #f39c12; }
+        .points-box { font-size: 3rem; font-weight: bold; margin: 20px 0; }
     </style>
 </head>
 <body>
-    <div class="card" id="card-element">
-        <div style="font-size:0.8em; opacity:0.6;">{{salon_name}}</div>
-        <div style="margin: 40px 0;">
-            <div id="points" class="points-val">{{points}}</div>
-            <div style="font-size: 0.8em;">POINTS FIDÉLITÉ</div>
+    <div class="card">
+        <h1>{{salon_name}}</h1>
+        <p>Client : <strong>{{nom}}</strong></p>
+        <div class="points-box" id="points-display">{{points}}</div>
+        <p>POINTS FIDÉLITÉ</p>
+        <div class="qr-container">
+            <img src="{{qrCode}}" alt="Mon QR Code">
         </div>
-        <div class="qr-container"><img src="{{qrCode}}" width="150"></div>
-        <div style="margin-top:15px; font-weight:bold;">{{nom}}</div>
     </div>
 
     <script>
         const socket = io();
-        const pointsEl = document.getElementById('points');
-        const cardEl = document.getElementById('card-element');
-
-        socket.emit('join-client-room', "{{id}}");
-
+        socket.emit('join-client-room', '{{id}}');
         socket.on('point-added', (data) => {
-            // 1. On ajoute les classes d'animation
-            pointsEl.classList.add('bump');
-            cardEl.classList.add('card-highlight');
-
-            // 2. On met à jour le texte au milieu de l'animation
-            setTimeout(() => {
-                pointsEl.innerText = data.newPoints;
-            }, 100);
-
-            // 3. On retire les classes après 600ms pour pouvoir recommencer au prochain scan
-            setTimeout(() => {
-                pointsEl.classList.remove('bump');
-                cardEl.classList.remove('card-highlight');
-            }, 600);
+            document.getElementById('points-display').innerText = data.newPoints;
+            alert("Félicitations ! Un point a été ajouté.");
         });
     </script>
 </body>

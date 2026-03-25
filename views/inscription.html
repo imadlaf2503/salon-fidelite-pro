@@ -1,23 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription Fidélité</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inscription Fidélité - IMAD COIFFURE</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input { padding: 12px; width: 80%; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button { background: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: #2a2a2a; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 85%; max-width: 400px; text-align: center; }
+        h1 { font-size: 1.5rem; margin-bottom: 10px; color: #f39c12; }
+        p { color: #ccc; font-size: 0.9rem; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: none; border-radius: 10px; background: #3d3d3d; color: white; font-size: 1rem; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: #f39c12; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Bienvenue chez IMAD COIFFURE</h1>
-        <p>Entrez votre nom pour obtenir votre carte de fidélité numérique :</p>
+    <div class="container">
+        <h1>IMAD COIFFURE</h1>
+        <p>Entrez votre nom pour recevoir votre carte de fidélité numérique.</p>
         <form action="/inscription-client" method="POST">
-            <input type="text" name="nom" placeholder="Votre Nom et Prénom" required>
-            <br>
+            <input type="text" name="nom" placeholder="Votre Nom" required autofocus>
             <button type="submit">Obtenir ma carte</button>
         </form>
     </div>
