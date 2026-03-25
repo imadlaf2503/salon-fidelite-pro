@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
-const mongoose = require('mongoose'); // Importation de Mongoose
+const mongoose = require('mongoose');
 
 const app = express();
 const server = http.createServer(app);
@@ -14,27 +14,26 @@ const io = new Server(server);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// --- NOUVEAU : Autorise le serveur à servir les fichiers du dossier /public ---
+app.use(express.static('public'));
+
 const SCAN_PASS = "COIFFEUR2026";
 
-// ==========================================
-// 1. CONNEXION MONGODB (COLLE TON URL ICI)
-// ==========================================
-const MONGO_URI = "mongodb+srv://admin:Abdellah252003@cluster0.pjco9tv.mongodb.net/salonDB?appName=Cluster0";
+// Connexion MongoDB (Garde ton URL ici)
+const MONGO_URI = "mongodb+srv://admin:Abdellah252003@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connecté à MongoDB Cloud"))
   .catch(err => console.error("❌ Erreur de connexion Mongo :", err));
 
-// ==========================================
-// 2. MODÈLE DE DONNÉES (SCHEMA)
-// ==========================================
+// Modèle de données
 const ClientSchema = new mongoose.Schema({
     nom: String,
     points: { type: Number, default: 0 }
 });
 const Client = mongoose.model('Client', ClientSchema);
 
-// Moteur de rendu ultra-simple
+// Moteur de rendu
 function render(viewName, variables = {}) {
     let template = fs.readFileSync(path.join(__dirname, 'views', viewName), 'utf8');
     Object.keys(variables).forEach(key => {
@@ -45,7 +44,6 @@ function render(viewName, variables = {}) {
 
 // --- ROUTES ---
 
-// Accueil (Dashboard) - On récupère les clients depuis MongoDB
 app.get('/', async (req, res) => {
     try {
         const clients = await Client.find();
@@ -58,17 +56,25 @@ app.get('/', async (req, res) => {
             </tr>`;
         });
         res.send(render('dashboard.html', { tableRows }));
-    } catch (e) {
-        res.status(500).send("Erreur de base de données");
-    }
+    } catch (e) { res.status(500).send("Erreur"); }
 });
 
-// La Carte Client
+app.get('/inscription', (req, res) => {
+    res.send(render('inscription.html'));
+});
+
+app.post('/inscription-client', async (req, res) => {
+    try {
+        const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
+        await nouveauClient.save();
+        res.redirect(`/ma-carte/${nouveauClient._id}`);
+    } catch (e) { res.status(500).send("Erreur"); }
+});
+
 app.get('/ma-carte/:id', async (req, res) => {
     try {
         const client = await Client.findById(req.params.id);
-        if (!client) return res.status(404).send("Client inexistant");
-        
+        if (!client) return res.status(404).send("Inexistant");
         const qrImage = await QRCode.toDataURL(req.params.id);
         res.send(render('carte.html', {
             id: req.params.id,
@@ -77,72 +83,27 @@ app.get('/ma-carte/:id', async (req, res) => {
             qrCode: qrImage,
             salon_name: "IMAD COIFFURE"
         }));
-    } catch (e) {
-        res.status(404).send("Lien invalide");
-    }
+    } catch (e) { res.status(404).send("Lien invalide"); }
 });
 
-// Le Scanner
 app.get('/scanner', (req, res) => {
     if (req.query.pass !== SCAN_PASS) return res.send("Accès refusé");
     res.send(render('scanner.html', { pass: SCAN_PASS }));
 });
 
-// API : Création Client
-app.post('/create-card-web', async (req, res) => {
-    try {
-        const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
-        await nouveauClient.save();
-        res.redirect('/');
-    } catch (e) {
-        res.status(500).send("Erreur lors de la création");
-    }
-});
-
-// API : Scan (Ajout de point en temps réel)
 app.post('/scan-api', async (req, res) => {
     if (req.body.pass !== SCAN_PASS) return res.json({ success: false });
-    
-    const id = req.body.qrCodeId;
     try {
-        // On incrémente le point directement dans MongoDB
-        const client = await Client.findByIdAndUpdate(
-            id, 
-            { $inc: { points: 1 } }, 
-            { new: true }
-        );
-
+        const client = await Client.findByIdAndUpdate(req.body.qrCodeId, { $inc: { points: 1 } }, { new: true });
         if (client) {
-            io.to(id).emit('point-added', { newPoints: client.points });
+            io.to(req.body.qrCodeId).emit('point-added', { newPoints: client.points });
             res.json({ success: true });
-        } else {
-            res.json({ success: false });
-        }
-    } catch (e) {
-        res.json({ success: false });
-    }
+        } else { res.json({ success: false }); }
+    } catch (e) { res.json({ success: false }); }
 });
 
-// Socket.io
 io.on('connection', (socket) => {
     socket.on('join-client-room', (id) => socket.join(id));
-});
-
-// Route pour afficher le formulaire d'inscription au client
-app.get('/inscription', (req, res) => {
-    res.send(render('inscription.html'));
-});
-
-// Route qui reçoit les infos du client et crée la carte
-app.post('/inscription-client', async (req, res) => {
-    try {
-        const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
-        await nouveauClient.save();
-        // On redirige le client DIRECTEMENT sur sa nouvelle carte
-        res.redirect(`/ma-carte/${nouveauClient._id}`);
-    } catch (e) {
-        res.status(500).send("Erreur lors de l'inscription");
-    }
 });
 
 const PORT = process.env.PORT || 3000;
