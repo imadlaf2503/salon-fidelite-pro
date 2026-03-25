@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 const SCAN_PASS = "COIFFEUR2026";
-const MONGO_URI = "mongodb+srv://admin:Abdellah2503@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
+const MONGO_URI = "mongodb+srv://admin:Abdellah252003@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connecté à MongoDB Cloud"))
