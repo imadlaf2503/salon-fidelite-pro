@@ -12,46 +12,37 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 20px; }
+        body { font-family: -apple-system, sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 20px; }
         .card { background: linear-gradient(145deg, #1e1e1e, #2a2a2a); padding: 30px; border-radius: 25px; border: 1px solid #333; max-width: 350px; margin: 20px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #f39c12; margin-top: 0; font-size: 1.4rem; }
-        .points-box { font-size: 4rem; font-weight: bold; color: #f39c12; margin: 10px 0; }
-        .qr-container { background: white; padding: 15px; display: inline-block; border-radius: 15px; margin-top: 10px; }
-        .qr-container img { width: 150px; height: 150px; }
-        
-        /* Message d'installation */
-        #install-guide { background: #f39c12; color: black; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; display: none; }
+        h1 { color: #f39c12; margin: 0; font-size: 1.5rem; }
+        .points-box { font-size: 4rem; font-weight: bold; color: #f39c12; margin: 15px 0; }
+        .qr-container { background: white; padding: 15px; display: inline-block; border-radius: 15px; }
+        .instructions { color: #888; font-size: 0.8rem; margin-top: 20px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-    <div id="install-guide">
-        ☝️ Pour ne pas perdre votre carte : <br>
-        Appuyez sur <img src="https://img.icons8.com/ios/20/000000/export.png"/> puis "Sur l'écran d'accueil"
-    </div>
-
     <div class="card">
         <h1>{{salon_name}}</h1>
-        <p style="color: #888;">Carte de fidélité</p>
-        <p><strong>{{nom}}</strong></p>
+        <p style="margin-bottom: 5px;">{{nom}}</p>
         <div class="points-box" id="points-display">{{points}}</div>
-        <p style="letter-spacing: 2px; font-size: 0.8rem; color: #888;">POINTS ACCUMULÉS</p>
+        <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; color: #f39c12;">Points Fidélité</p>
+        
         <div class="qr-container">
-            <img src="{{qrCode}}" alt="Mon QR Code">
+            <img src="{{qrCode}}" alt="Mon QR Code" style="width: 150px; height: 150px;">
+        </div>
+
+        <div class="instructions">
+            Pour garder votre carte :<br>
+            Appuyez sur <img src="https://img.icons8.com/ios/20/ffffff/export.png"/> puis <strong>"Sur l'écran d'accueil"</strong>
         </div>
     </div>
 
     <script>
-        // Afficher le guide d'installation uniquement si on n'est pas déjà dans l'app
-        if (!window.navigator.standalone) {
-            document.getElementById('install-guide').style.display = 'block';
-        }
-
         const socket = io();
         socket.emit('join-client-room', '{{id}}');
         socket.on('point-added', (data) => {
             document.getElementById('points-display').innerText = data.newPoints;
-            // On peut ajouter un petit son ou une animation ici plus tard
         });
     </script>
 </body>

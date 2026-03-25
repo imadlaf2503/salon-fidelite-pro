@@ -31,21 +31,23 @@ function render(viewName, variables = {}) {
     return template;
 }
 
-// 1. RACINE (/) : Page d'inscription pour les clients
-app.get('/', (req, res) => {
-    res.send(render('inscription.html'));
-});
+// --- LES ROUTES COMME AVANT ---
 
-// 2. DASHBOARD (/admin-vrai-dashboard) : Pour le coiffeur
-app.get('/admin-vrai-dashboard', async (req, res) => {
+// Accueil = Dashboard
+app.get('/', async (req, res) => {
     try {
         const clients = await Client.find();
         let tableRows = "";
         clients.forEach(c => {
-            tableRows += `<tr><td>${c.nom}</td><td>${c.points}</td><td><a href="/ma-carte/${c._id}" target="_blank">Voir Carte</a></td></tr>`;
+            tableRows += `<tr><td>${c.nom}</td><td>${c.points}</td><td><a href="/ma-carte/${c._id}" target="_blank">Lien</a></td></tr>`;
         });
         res.send(render('dashboard.html', { tableRows }));
     } catch (e) { res.status(500).send("Erreur"); }
+});
+
+// Inscription = Pour les clients
+app.get('/inscription', (req, res) => {
+    res.send(render('inscription.html'));
 });
 
 app.post('/inscription-client', async (req, res) => {
@@ -91,4 +93,4 @@ io.on('connection', (socket) => {
     socket.on('join-client-room', (id) => socket.join(id));
 });
 
-server.listen(process.env.PORT || 3000, () => console.log("🚀 Système prêt !"));
+server.listen(process.env.PORT || 3000, () => console.log("🚀 Retour à la normale !"));
