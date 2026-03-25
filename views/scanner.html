@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { background: #000; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        #reader { width: 100%; max-width: 400px; margin: auto; border-radius: 15px; overflow: hidden; }
+        .status { margin-top: 20px; padding: 20px; background: #333; border-radius: 10px; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <h2>Scanner Client</h2>
+    <div id="reader"></div>
+    <div id="msg" class="status">Prêt à scanner</div>
+    <br>
+    <a href="/" style="color: #888; text-decoration: none;">← Retour Admin</a>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let isScanning = false;
+
+        function onScanSuccess(decodedText) {
+            if (isScanning) return;
+            isScanning = true;
+
+            // Bip sonore
+            const osc = audioCtx.createOscillator();
+            osc.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+
+            fetch('/scan-api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ qrCodeId: decodedText, pass: "{{pass}}" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('msg').innerText = data.success ? "POINT AJOUTÉ !" : "ERREUR";
+                document.getElementById('msg').style.color = data.success ? "#27ae60" : "#e74c3c";
+                setTimeout(() => {
+                    isScanning = false;
+                    document.getElementById('msg').innerText = "Prêt à scanner";
+                    document.getElementById('msg').style.color = "white";
+                }, 3000);
+            });
+        }
+
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>

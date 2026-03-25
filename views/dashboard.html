@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Salon</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; text-align: center; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background: #34495e; color: white; }
+        .btn-scan { display: inline-block; margin-top: 20px; padding: 15px 30px; background: #e67e22; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💈 Gestion Salon</h1>
+        <form action="/create-card-web" method="POST">
+            <input type="text" name="nom" placeholder="Nom du client" required style="padding:10px; width:200px;">
+            <button type="submit" style="padding:10px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer;">Ajouter Client</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr><th>Nom</th><th>Points</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                {{tableRows}}
+            </tbody>
+        </table>
+
+        <a href="#" onclick="checkPass()" class="btn-scan">📱 ACCÈS SCANNER</a>
+    </div>
+
+    <script>
+        function checkPass() {
+            const p = prompt("Mot de passe coiffeur :");
+            if(p) window.location.href = "/scanner?pass=" + p;
+        }
+    </script>
+</body>
+</html>
