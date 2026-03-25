@@ -31,20 +31,18 @@ function render(viewName, variables = {}) {
     return template;
 }
 
-// --- ROUTES ---
-
-// 1. La racine envoie à l'inscription
+// 1. RACINE (/) : Page d'inscription pour les clients
 app.get('/', (req, res) => {
     res.send(render('inscription.html'));
 });
 
-// 2. Le Dashboard est maintenant caché ici
+// 2. DASHBOARD (/admin-vrai-dashboard) : Pour le coiffeur
 app.get('/admin-vrai-dashboard', async (req, res) => {
     try {
         const clients = await Client.find();
         let tableRows = "";
         clients.forEach(c => {
-            tableRows += `<tr><td>${c.nom}</td><td>${c.points}</td><td><a href="/ma-carte/${c._id}" target="_blank">Lien</a></td></tr>`;
+            tableRows += `<tr><td>${c.nom}</td><td>${c.points}</td><td><a href="/ma-carte/${c._id}" target="_blank">Voir Carte</a></td></tr>`;
         });
         res.send(render('dashboard.html', { tableRows }));
     } catch (e) { res.status(500).send("Erreur"); }
@@ -93,4 +91,4 @@ io.on('connection', (socket) => {
     socket.on('join-client-room', (id) => socket.join(id));
 });
 
-server.listen(process.env.PORT || 3000, () => console.log("🚀 Système opérationnel"));
+server.listen(process.env.PORT || 3000, () => console.log("🚀 Système prêt !"));
