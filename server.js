@@ -13,27 +13,23 @@ const io = new Server(server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// --- NOUVEAU : Autorise le serveur à servir les fichiers du dossier /public ---
 app.use(express.static('public'));
 
 const SCAN_PASS = "COIFFEUR2026";
 
-// Connexion MongoDB (Garde ton URL ici)
+// Connexion MongoDB
 const MONGO_URI = "mongodb+srv://admin:Abdellah252003@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connecté à MongoDB Cloud"))
   .catch(err => console.error("❌ Erreur de connexion Mongo :", err));
 
-// Modèle de données
 const ClientSchema = new mongoose.Schema({
     nom: String,
     points: { type: Number, default: 0 }
 });
 const Client = mongoose.model('Client', ClientSchema);
 
-// Moteur de rendu
 function render(viewName, variables = {}) {
     let template = fs.readFileSync(path.join(__dirname, 'views', viewName), 'utf8');
     Object.keys(variables).forEach(key => {
@@ -67,7 +63,8 @@ app.post('/inscription-client', async (req, res) => {
     try {
         const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
         await nouveauClient.save();
-        res.redirect(`/ma-carte/${nouveauClient._id}`);
+        // Redirige vers la carte avec un paramètre spécial ?install=true
+        res.redirect(`/ma-carte/${nouveauClient._id}?install=true`);
     } catch (e) { res.status(500).send("Erreur"); }
 });
 
