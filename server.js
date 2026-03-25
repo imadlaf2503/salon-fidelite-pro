@@ -19,7 +19,7 @@ const SCAN_PASS = "COIFFEUR2026";
 // ==========================================
 // 1. CONNEXION MONGODB (COLLE TON URL ICI)
 // ==========================================
-const MONGO_URI = "mongodb+srv://admin:<Abdellah252003@>@cluster0.pjco9tv.mongodb.net/salonDB?appName=Cluster0";
+const MONGO_URI = "mongodb+srv://admin:Abdellah252003@@cluster0.pjco9tv.mongodb.net/salonDB?appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connecté à MongoDB Cloud"))
