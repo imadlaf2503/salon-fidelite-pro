@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Fidélité</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { padding: 12px; width: 80%; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+        button { background: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Bienvenue chez IMAD COIFFURE</h1>
+        <p>Entrez votre nom pour obtenir votre carte de fidélité numérique :</p>
+        <form action="/inscription-client" method="POST">
+            <input type="text" name="nom" placeholder="Votre Nom et Prénom" required>
+            <br>
+            <button type="submit">Obtenir ma carte</button>
+        </form>
+    </div>
+</body>
+</html>

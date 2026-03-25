@@ -128,5 +128,22 @@ io.on('connection', (socket) => {
     socket.on('join-client-room', (id) => socket.join(id));
 });
 
+// Route pour afficher le formulaire d'inscription au client
+app.get('/inscription', (req, res) => {
+    res.send(render('inscription.html'));
+});
+
+// Route qui reçoit les infos du client et crée la carte
+app.post('/inscription-client', async (req, res) => {
+    try {
+        const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
+        await nouveauClient.save();
+        // On redirige le client DIRECTEMENT sur sa nouvelle carte
+        res.redirect(`/ma-carte/${nouveauClient._id}`);
+    } catch (e) {
+        res.status(500).send("Erreur lors de l'inscription");
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🚀 Système prêt sur le port ${PORT}`));
