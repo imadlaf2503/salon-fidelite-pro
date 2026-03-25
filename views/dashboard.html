@@ -31,6 +31,21 @@
 
         <a href="#" onclick="checkPass()" class="btn-scan">📱 ACCÈS SCANNER</a>
     </div>
+    <div style="background: #eee; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+        <h3>QR Code d'Inscription pour les Clients</h3>
+        <img id="qrSalon" src="" alt="QR Code Inscription">
+        <p>Lien : <span id="lienInscription"></span></p>
+    </div>
+
+    <script>
+        // On génère le QR code dynamiquement au chargement
+        const urlInscription = window.location.origin + "/inscription";
+        document.getElementById('lienInscription').innerText = urlInscription;
+        
+        // On utilise une API gratuite pour afficher le QR Code
+        const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(urlInscription);
+        document.getElementById('qrSalon').src = qrUrl;
+    </script>
 
     <script>
         function checkPass() {
