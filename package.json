@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^5.2.1",
+    "mongoose": "^9.3.2",
     "passkit-generator": "^3.5.7",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.3",
