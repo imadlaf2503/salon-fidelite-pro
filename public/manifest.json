@@ -1,7 +1,7 @@
 {
   "short_name": "ImadFid",
   "name": "Imad Coiffure Fidélité",
-  "description": "Votre carte de fidélité numérique chez Imad Coiffure",
+  "description": "Votre carte de fidélité numérique",
   "icons": [
     {
       "src": "/icon.png",
@@ -14,7 +14,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/inscription",
+  "start_url": ".",
   "display": "standalone",
   "theme_color": "#1a1a1a",
   "background_color": "#1a1a1a",
