@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
@@ -16,19 +15,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 const SCAN_PASS = "COIFFEUR2026";
-
-// Connexion MongoDB
-const MONGO_URI = "mongodb+srv://admin:Abdellah252003@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
+const MONGO_URI = "mongodb+srv://admin:Abdellah2026@cluster0.pjco9tv.mongodb.net/salonDB?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connecté à MongoDB Cloud"))
-  .catch(err => console.error("❌ Erreur de connexion Mongo :", err));
+  .catch(err => console.error("❌ Erreur Mongo :", err));
 
-const ClientSchema = new mongoose.Schema({
-    nom: String,
-    points: { type: Number, default: 0 }
-});
-const Client = mongoose.model('Client', ClientSchema);
+const Client = mongoose.model('Client', new mongoose.Schema({ nom: String, points: { type: Number, default: 0 } }));
 
 function render(viewName, variables = {}) {
     let template = fs.readFileSync(path.join(__dirname, 'views', viewName), 'utf8');
@@ -40,31 +33,28 @@ function render(viewName, variables = {}) {
 
 // --- ROUTES ---
 
-app.get('/', async (req, res) => {
+// 1. La racine envoie à l'inscription
+app.get('/', (req, res) => {
+    res.send(render('inscription.html'));
+});
+
+// 2. Le Dashboard est maintenant caché ici
+app.get('/admin-vrai-dashboard', async (req, res) => {
     try {
         const clients = await Client.find();
         let tableRows = "";
         clients.forEach(c => {
-            tableRows += `<tr>
-                <td>${c.nom}</td>
-                <td>${c.points}</td>
-                <td><a href="/ma-carte/${c._id}" target="_blank">Voir Carte</a></td>
-            </tr>`;
+            tableRows += `<tr><td>${c.nom}</td><td>${c.points}</td><td><a href="/ma-carte/${c._id}" target="_blank">Lien</a></td></tr>`;
         });
         res.send(render('dashboard.html', { tableRows }));
     } catch (e) { res.status(500).send("Erreur"); }
-});
-
-app.get('/inscription', (req, res) => {
-    res.send(render('inscription.html'));
 });
 
 app.post('/inscription-client', async (req, res) => {
     try {
         const nouveauClient = new Client({ nom: req.body.nom, points: 0 });
         await nouveauClient.save();
-        // Redirige vers la carte avec un paramètre spécial ?install=true
-        res.redirect(`/ma-carte/${nouveauClient._id}?install=true`);
+        res.redirect(`/ma-carte/${nouveauClient._id}`);
     } catch (e) { res.status(500).send("Erreur"); }
 });
 
@@ -103,5 +93,4 @@ io.on('connection', (socket) => {
     socket.on('join-client-room', (id) => socket.join(id));
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Système prêt sur le port ${PORT}`));
+server.listen(process.env.PORT || 3000, () => console.log("🚀 Système opérationnel"));
