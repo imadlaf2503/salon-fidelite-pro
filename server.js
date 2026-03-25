@@ -13,8 +13,29 @@ const io = new Server(server);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const DB_PATH = './data/db.json';
+
 const SCAN_PASS = "COIFFEUR2026";
+
+const DB_PATH = path.join(__dirname, 'data', 'db.json');
+const DATA_DIR = path.join(__dirname, 'data');
+
+// Fonction pour s'assurer que la BDD existe
+const initializeDB = () => {
+    // 1. Créer le dossier 'data' s'il n'existe pas
+    if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR);
+        console.log("📁 Dossier /data créé");
+    }
+    // 2. Créer le fichier 'db.json' s'il n'existe pas
+    if (!fs.existsSync(DB_PATH)) {
+        fs.writeFileSync(DB_PATH, JSON.stringify({}, null, 2));
+        console.log("📄 Fichier db.json initialisé");
+    }
+};
+
+// Appeler l'initialisation AVANT de lancer le serveur
+initializeDB();
+
 
 // Helper pour charger/sauvegarder la BDD
 const getClients = () => JSON.parse(fs.readFileSync(DB_PATH));
